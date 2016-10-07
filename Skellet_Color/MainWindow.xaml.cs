@@ -196,6 +196,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
 
+            
+
             // populate body colors, one for each BodyIndex
             this.bodyColors = new List<Pen>();
 
@@ -254,7 +256,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
         }
 
-
+  
         /// <summary>
         /// Execute start up tasks
         /// </summary>
@@ -358,7 +360,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             }
 
                             this.DrawBody(joints, jointPoints, dc, drawPen);
-
+                            //
                             this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
                             this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
                         }
@@ -401,9 +403,27 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     drawBrush = this.inferredJointBrush;
                 }
 
+                double x = jointPoints[jointType].X;
+                double y = jointPoints[jointType].Y; 
+
+
+                //Makes a Formated text to write the Koordinates from jointType to Points of Skelet
+                System.Windows.Media.FormattedText Text = new FormattedText(
+                                                                            "X: " + x + "Y: " + y,
+                                                                            CultureInfo.GetCultureInfo("en-us"),
+                                                                            FlowDirection.LeftToRight,
+                                                                            new Typeface("Verdana"),
+                                                                            32,
+                                                                            Brushes.Black);
+
                 if (drawBrush != null)
                 {
                     drawingContext.DrawEllipse(drawBrush, null, jointPoints[jointType], JointThickness, JointThickness);
+                    drawingContext.DrawText(Text, jointPoints[jointType]);
+
+                    //In Datenbankspeichern mit der Übungs nummer und einer fortlaufenden Id
+                    //Nach auswertung speichern des Ergebnis Auswertung nach Auswahl neuer Übung oder Abschließen der Gesammt Übung 
+                    //Übungs Daten nach ausführung Löschen
                 }
             }
         }
@@ -435,9 +455,12 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 drawPen = drawingPen;
             }
-
+            
+            
             drawingContext.DrawLine(drawPen, jointPoints[jointType0], jointPoints[jointType1]);
         }
+
+        
 
         /// <summary>
         /// Draws a hand symbol if the hand is tracked: red circle = closed, green circle = opened; blue circle = lasso
