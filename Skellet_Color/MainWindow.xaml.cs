@@ -328,8 +328,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 using (DrawingContext dc = this.drawingGroup.Open())
                 {
+
                     // Draw a transparent background to set the render size
-                   // dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
+                   dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
 
                     int penIndex = 0;
                     foreach (Body body in this.bodies)
@@ -363,12 +364,83 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             //
                             this.DrawHand(body.HandLeftState, jointPoints[JointType.HandLeft], dc);
                             this.DrawHand(body.HandRightState, jointPoints[JointType.HandRight], dc);
+                            this.DrawfirstSample(jointPoints[JointType.SpineShoulder], jointPoints[JointType.HandLeft], jointPoints[JointType.HandRight], dc);
+
+                            
                         }
                     }
 
                     // prevent drawing outside of our render area
                     this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, this.displayWidth, this.displayHeight));
                 }
+            }
+        }
+        Boolean geschafft = false;
+        /// <summary>
+        /// Erste Übung Zeigt einen Punkt Welcher berührt werden soll
+        /// </summary>
+        /// <param name="shoulder"></param>
+        /// <param name="leftHandPosition"></param>
+        /// <param name="rightHandPosition"></param>
+        /// <param name="drawingContext"></param>
+        private void DrawfirstSample(Point shoulder , Point leftHandPosition, Point rightHandPosition, DrawingContext drawingContext) {
+            Point kreis1 = new Point(this.displayWidth/2, this.displayHeight - (this.displayHeight - 80));
+     
+
+            if (kreis1.X + 10 >= rightHandPosition.X && kreis1.X - 10 <= rightHandPosition.X && kreis1.Y + 10 >= rightHandPosition.Y && kreis1.Y - 10 <= rightHandPosition.Y)
+            {
+                geschafft = true;
+            }
+            else if (geschafft) {
+                this.DrawSecoundSample(shoulder, leftHandPosition, rightHandPosition, drawingContext);
+            }
+            else
+            {
+                drawingContext.DrawText(BuildMyText("Berühren sie den Punkt mit der Rechten Hand"), new Point(this.displayWidth / 10, this.displayHeight - (this.displayHeight - 40)));
+                drawingContext.DrawEllipse(Brushes.Aqua, null, kreis1, 10, 10);
+            }
+        }
+        /// <summary>
+        /// Macht aus einen String einen FormatedText für die DrawText Methode
+        /// </summary>
+        /// <param name="mytext"></param>
+        /// <returns></returns>
+        public FormattedText BuildMyText(String mytext) {
+
+            System.Windows.Media.FormattedText Text = new FormattedText(
+                                                                            "" + mytext,
+                                                                            CultureInfo.GetCultureInfo("en-us"),
+                                                                            FlowDirection.LeftToRight,
+                                                                            new Typeface("Verdana"),
+                                                                            12,
+                                                                            Brushes.Black);
+
+            return Text;
+        }
+         /// <summary>
+         /// Zweite übung Man soll seine Hände über zwei Punkte heben
+         /// </summary>
+         /// <param name="shoulder"></param>
+         /// <param name="leftHandPosition"></param>
+         /// <param name="rightHandPosition"></param>
+         /// <param name="drawingContext"></param>
+        private void DrawSecoundSample(Point shoulder, Point leftHandPosition, Point rightHandPosition, DrawingContext drawingContext)
+        {
+           
+
+            Point circelRight = new Point(this.displayWidth / 4 * 3, shoulder.Y + 20);
+            Point circelLeft = new Point(this.displayWidth / 4 , shoulder.Y + 20);
+
+
+            if (leftHandPosition.Y < circelLeft.Y && circelRight.Y > rightHandPosition.Y)
+            {
+                drawingContext.DrawEllipse(Brushes.Green, null, circelLeft, 10, 10);
+                drawingContext.DrawEllipse(Brushes.Green, null, circelRight, 10, 10);
+            }
+            else {
+                drawingContext.DrawText(BuildMyText("Heben sie die Hände über die Punkte"), new Point(this.displayWidth / 10, this.displayHeight - (this.displayHeight - 40)));
+                drawingContext.DrawEllipse(Brushes.Aqua, null, circelLeft, 10, 10);
+                drawingContext.DrawEllipse(Brushes.Aqua, null, circelRight, 10, 10);
             }
         }
 
@@ -413,13 +485,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                                                                             CultureInfo.GetCultureInfo("en-us"),
                                                                             FlowDirection.LeftToRight,
                                                                             new Typeface("Verdana"),
-                                                                            32,
+                                                                            12,
                                                                             Brushes.Black);
 
                 if (drawBrush != null)
                 {
                     drawingContext.DrawEllipse(drawBrush, null, jointPoints[jointType], JointThickness, JointThickness);
-                    drawingContext.DrawText(Text, jointPoints[jointType]);
+                    //drawingContext.DrawText(Text, jointPoints[jointType]);
 
                     //In Datenbankspeichern mit der Übungs nummer und einer fortlaufenden Id
                     //Nach auswertung speichern des Ergebnis Auswertung nach Auswahl neuer Übung oder Abschließen der Gesammt Übung 
